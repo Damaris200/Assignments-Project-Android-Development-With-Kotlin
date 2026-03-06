@@ -14,16 +14,15 @@ import java.io.File
 
 /**
  * ExcelWriter — object singleton
- * Creates a brand new Excel file with grade results only
- * No CA or Exam columns in the output
+ * Handles writing grade results to Excel, HTML and PDF (via browser)
  */
 object ExcelWriter {
+
+    // ── Write Excel Results ───────────────────────────────────────────────────
 
     fun writeResults(students: List<Student>, outputFile: File) {
         val workbook: Workbook = XSSFWorkbook()
         val sheet = workbook.createSheet("Grade Results")
-
-        // ── Styles ────────────────────────────────────────────────────────
 
         val headerFont: Font = workbook.createFont()
         headerFont.bold = true
@@ -70,19 +69,15 @@ object ExcelWriter {
             return style
         }
 
-        // ── Header Row — NO CA or Exam ────────────────────────────────────
-
         val headers = listOf("No.", "Student Name", "Total", "Grade", "Grade Points", "Remarks")
         val headerRow = sheet.createRow(0)
-        headers.forEachIndexed { col, title ->        // Lambda
+        headers.forEachIndexed { col, title ->
             val cell = headerRow.createCell(col)
             cell.setCellValue(title)
             cell.cellStyle = headerStyle
         }
 
-        // ── Data Rows — using lambda forEach ─────────────────────────────
-
-        students.forEachIndexed { index, student ->   // Lambda
+        students.forEachIndexed { index, student ->
             val row = sheet.createRow(index + 1)
 
             val noCell = row.createCell(0)
@@ -108,8 +103,6 @@ object ExcelWriter {
             remarksCell.cellStyle = centerStyle
         }
 
-        // ── Summary Section ───────────────────────────────────────────────
-
         val summaryStart = students.size + 3
 
         fun addRow(offset: Int, label: String, value: String) {
@@ -120,11 +113,11 @@ object ExcelWriter {
             r.createCell(1).setCellValue(value)
         }
 
-        val avg     = students.map { it.total }.average()   // Lambda
-        val passing = students.count { it.grade != "F" }    // Lambda
-        val failing = students.count { it.grade == "F" }    // Lambda
-        val highest = students.maxOf { it.total }           // Lambda
-        val lowest  = students.minOf { it.total }           // Lambda
+        val avg     = students.map { it.total }.average()
+        val passing = students.count { it.grade != "F" }
+        val failing = students.count { it.grade == "F" }
+        val highest = students.maxOf { it.total }
+        val lowest  = students.minOf { it.total }
 
         addRow(0, "── SUMMARY ──",    "")
         addRow(1, "Total Students",   "${students.size}")
@@ -134,12 +127,227 @@ object ExcelWriter {
         addRow(5, "Passing Students", "$passing")
         addRow(6, "Failing Students", "$failing")
 
-        // ── Auto-size & Save ──────────────────────────────────────────────
-
         for (col in 0..5) sheet.autoSizeColumn(col)
 
         outputFile.parentFile?.mkdirs()
         outputFile.outputStream().use { workbook.write(it) }
         workbook.close()
+    }
+
+    // ── Save as HTML ──────────────────────────────────────────────────────────
+
+    fun saveAsHtml(students: List<Student>, outputFile: File) {
+        outputFile.parentFile?.mkdirs()
+        outputFile.writeText(generateHtmlContent(students))
+        // Auto-open in browser
+        java.awt.Desktop.getDesktop().browse(outputFile.toURI())
+    }
+
+    // ── Save as PDF (via browser print) ──────────────────────────────────────
+
+    fun saveAsPdf(students: List<Student>, outputFile: File) {
+        // Generate a temp HTML file next to the pdf output location
+        val tempHtml = File(outputFile.parent, outputFile.nameWithoutExtension + "_temp.html")
+        tempHtml.parentFile?.mkdirs()
+        tempHtml.writeText(generateHtmlContent(students, forPrint = true))
+        // Open in browser — user prints as PDF using Ctrl+P
+        java.awt.Desktop.getDesktop().browse(tempHtml.toURI())
+    }
+
+    // ── Generate HTML content shared by both HTML and PDF ────────────────────
+
+    private fun generateHtmlContent(students: List<Student>, forPrint: Boolean = false): String {
+        val avg     = students.map { it.total }.average()
+        val passing = students.count { it.grade != "F" }
+        val failing = students.count { it.grade == "F" }
+        val highest = students.maxOf { it.total }
+        val lowest  = students.minOf { it.total }
+
+        // Build table rows using lambda
+        val rows = students.mapIndexed { index, s ->
+            val color = when (s.grade) {
+                "A"  -> "#4CAF50"
+                "B+" -> "#4FC3F7"
+                "B"  -> "#6366F1"
+                "C+" -> "#F59E0B"
+                "C"  -> "#EAB308"
+                "D+" -> "#F97316"
+                "D"  -> "#EF4444"
+                else -> "#991B1B"
+            }
+            """
+            <tr>
+                <td>${index + 1}</td>
+                <td class="name">${s.name}</td>
+                <td>${s.total.fmt()}</td>
+                <td style="color:${color}; font-weight:700;">${s.grade}</td>
+                <td>${s.gradePoints}</td>
+                <td style="color:${color};">${s.remarks}</td>
+            </tr>
+            """.trimIndent()
+        }.joinToString("\n")
+
+        val printStyle = if (forPrint) """
+            @media print {
+                body { background: white !important; color: black !important; }
+                .header { background: #1a1a2e !important; }
+                th { background: #1a1a2e !important; color: white !important; }
+            }
+        """ else ""
+
+        return """
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>GradeDesk — Grade Results</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: #1E1E1E;
+                    color: #D4D4D4;
+                    padding: 32px;
+                }
+                .header {
+                    background: linear-gradient(135deg, #252526, #2D2D2D);
+                    border: 1px solid #3E3E42;
+                    border-radius: 16px;
+                    padding: 28px 32px;
+                    margin-bottom: 28px;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                }
+                .header h1 { font-size: 28px; color: #4FC3F7; letter-spacing: -1px; }
+                .header p  { font-size: 13px; color: #9CDCFE; margin-top: 4px; }
+                .stats {
+                    display: grid;
+                    grid-template-columns: repeat(5, 1fr);
+                    gap: 12px;
+                    margin-bottom: 28px;
+                }
+                .stat-card {
+                    background: #2D2D2D;
+                    border: 1px solid #3E3E42;
+                    border-radius: 12px;
+                    padding: 16px;
+                    text-align: center;
+                }
+                .stat-value { font-size: 26px; font-weight: 900; }
+                .stat-label { font-size: 11px; color: #9CDCFE; margin-top: 4px; }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    background: #252526;
+                    border-radius: 16px;
+                    overflow: hidden;
+                    border: 1px solid #3E3E42;
+                }
+                thead { background: #2D2D2D; }
+                th {
+                    padding: 14px 16px;
+                    text-align: left;
+                    font-size: 12px;
+                    color: #4FC3F7;
+                    font-weight: 700;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    border-bottom: 2px solid #3E3E42;
+                }
+                td {
+                    padding: 12px 16px;
+                    font-size: 14px;
+                    border-bottom: 1px solid #3E3E42;
+                }
+                tr:nth-child(even) td { background: #2A2A2A; }
+                tr:hover td { background: #2D2D2D; }
+                .name { font-weight: 600; color: #F1F5F9; }
+                .summary {
+                    margin-top: 24px;
+                    background: #2D2D2D;
+                    border: 1px solid #3E3E42;
+                    border-radius: 12px;
+                    padding: 20px 24px;
+                    font-size: 13px;
+                    color: #9CDCFE;
+                }
+                .summary p { margin: 4px 0; }
+                .footer {
+                    margin-top: 20px;
+                    text-align: center;
+                    font-size: 11px;
+                    color: #475569;
+                }
+                $printStyle
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <div>
+                    <h1>🎓 GradeDesk</h1>
+                    <p>Student Grade Results Report</p>
+                </div>
+                <div style="text-align:right; font-size:12px; color:#9CDCFE;">
+                    <p>Total Students: <strong style="color:#4FC3F7;">${students.size}</strong></p>
+                    <p>Generated: ${java.time.LocalDate.now()}</p>
+                </div>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" style="color:#4FC3F7;">${avg.fmt()}</div>
+                    <div class="stat-label">Class Average</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:#4CAF50;">$passing</div>
+                    <div class="stat-label">Passing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:#F44747;">$failing</div>
+                    <div class="stat-label">Failing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:#4EC9B0;">${highest.fmt()}</div>
+                    <div class="stat-label">Highest</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" style="color:#CE9178;">${lowest.fmt()}</div>
+                    <div class="stat-label">Lowest</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>No.</th>
+                        <th>Student Name</th>
+                        <th>Total</th>
+                        <th>Grade</th>
+                        <th>Grade Points</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $rows
+                </tbody>
+            </table>
+
+            <div class="summary">
+                <p>📊 Class Average: <strong>${avg.fmt()}</strong> &nbsp;|&nbsp;
+                   ✅ Passing: <strong>$passing</strong> &nbsp;|&nbsp;
+                   ❌ Failing: <strong>$failing</strong> &nbsp;|&nbsp;
+                   ⬆ Highest: <strong>${highest.fmt()}</strong> &nbsp;|&nbsp;
+                   ⬇ Lowest: <strong>${lowest.fmt()}</strong>
+                </p>
+            </div>
+
+            <div class="footer">
+                Generated by GradeDesk • ${java.time.LocalDate.now()}
+            </div>
+        </body>
+        </html>
+        """.trimIndent()
     }
 }
