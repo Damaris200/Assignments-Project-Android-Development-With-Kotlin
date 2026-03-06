@@ -122,6 +122,33 @@ fun App() {
                                     state.downloadMessage = "✅ HTML saved and opened: ${outputFile.absolutePath}"
                                 }
                             }
+                            "EXCEL" -> {
+                                chooser.selectedFile = File("grade_results.xlsx")
+                                chooser.fileFilter   = FileNameExtensionFilter("Excel File (*.xlsx)", "xlsx")
+                                val dialogResult = chooser.showSaveDialog(null)
+                                if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                                    var outputFile = chooser.selectedFile
+                                    if (!outputFile.name.endsWith(".xlsx")) {
+                                        outputFile = File(outputFile.absolutePath + ".xlsx")
+                                    }
+                                    ExcelWriter.writeResults(state.students, outputFile)
+                                    state.downloadMessage = "✅ Excel saved: ${outputFile.absolutePath}"
+                                }
+                            }
+
+                            "WORD" -> {
+                                chooser.selectedFile = File("grade_results.docx")
+                                chooser.fileFilter   = FileNameExtensionFilter("Word File (*.docx)", "docx")
+                                val dialogResult = chooser.showSaveDialog(null)
+                                if (dialogResult == JFileChooser.APPROVE_OPTION) {
+                                    var outputFile = chooser.selectedFile
+                                    if (!outputFile.name.endsWith(".docx")) {
+                                        outputFile = File(outputFile.absolutePath + ".docx")
+                                    }
+                                    ExcelWriter.saveAsWord(state.students, outputFile)
+                                    state.downloadMessage = "✅ Word saved: ${outputFile.absolutePath}"
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         state.downloadMessage = "❌ Failed: ${e.message}"

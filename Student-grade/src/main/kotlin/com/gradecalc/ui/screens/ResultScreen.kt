@@ -29,6 +29,8 @@ import com.gradecalc.utils.classAverage
 import com.gradecalc.utils.failing
 import com.gradecalc.utils.fmt
 import com.gradecalc.utils.passing
+import androidx.compose.material.icons.filled.TableChart
+import androidx.compose.material.icons.filled.Article
 
 @Composable
 fun ResultScreen(
@@ -123,6 +125,36 @@ fun ResultScreen(
                     Text("New File")
                 }
             }
+        }
+
+        // ADD these 2 buttons after the HTML button
+
+        Button(
+            onClick = { onDownload("EXCEL") },
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = AccentGreen)
+        ) {
+            Icon(
+                Icons.Default.TableChart,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Download Excel", fontWeight = FontWeight.SemiBold)
+        }
+
+        Button(
+            onClick = { onDownload("WORD") },
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = AccentPurple)
+        ) {
+            Icon(
+                Icons.Default.Article,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text("Download Word", fontWeight = FontWeight.SemiBold)
         }
 
         // ── Download message banner ───────────────────────────────────────

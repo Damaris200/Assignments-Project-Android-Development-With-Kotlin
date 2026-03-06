@@ -10,11 +10,13 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment
 import org.apache.poi.ss.usermodel.IndexedColors
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment
+import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
 
 /**
  * ExcelWriter — object singleton
- * Handles writing grade results to Excel, HTML and PDF (via browser)
+ * Handles writing grade results to Excel, Word, HTML and PDF (via browser)
  */
 object ExcelWriter {
 
@@ -134,23 +136,98 @@ object ExcelWriter {
         workbook.close()
     }
 
+    // ── Save as Word (.docx) ──────────────────────────────────────────────────
+
+    fun saveAsWord(students: List<Student>, outputFile: File) {
+        val doc = XWPFDocument()
+
+        // ── Title ─────────────────────────────────────────────────────────
+        val title = doc.createParagraph()
+        title.alignment = ParagraphAlignment.CENTER
+        val titleRun = title.createRun()
+        titleRun.setText("GradeDesk — Grade Results")
+        titleRun.isBold = true
+        titleRun.fontSize = 18
+        titleRun.addBreak()
+
+        // ── Date subtitle ─────────────────────────────────────────────────
+        val subtitle = doc.createParagraph()
+        subtitle.alignment = ParagraphAlignment.CENTER
+        val subtitleRun = subtitle.createRun()
+        subtitleRun.setText("Generated: ${java.time.LocalDate.now()}  |  Total Students: ${students.size}")
+        subtitleRun.fontSize = 11
+        subtitleRun.addBreak()
+
+        // ── Table ─────────────────────────────────────────────────────────
+        val table = doc.createTable(students.size + 1, 6)
+
+        // Header row — bold text
+        val headerLabels = listOf("No.", "Student Name", "Total", "Grade", "Grade Points", "Remarks")
+        headerLabels.forEachIndexed { col, text ->
+            val cell = table.getRow(0).getCell(col)
+            cell.removeParagraph(0)
+            val para = cell.addParagraph()
+            val run  = para.createRun()
+            run.setText(text)
+            run.isBold = true
+        }
+
+        // Data rows
+        students.forEachIndexed { index, student ->
+            val row = table.getRow(index + 1)
+            row.getCell(0).text = "${index + 1}"
+            row.getCell(1).text = student.name
+            row.getCell(2).text = student.total.fmt()
+            row.getCell(3).text = student.grade
+            row.getCell(4).text = "${student.gradePoints}"
+            row.getCell(5).text = student.remarks
+        }
+
+        // ── Summary paragraph ─────────────────────────────────────────────
+        val avg     = students.map { it.total }.average()
+        val passing = students.count { it.grade != "F" }
+        val failing = students.count { it.grade == "F" }
+        val highest = students.maxOf { it.total }
+        val lowest  = students.minOf { it.total }
+
+        doc.createParagraph() // blank line
+
+        val summaryPara = doc.createParagraph()
+        val summaryRun  = summaryPara.createRun()
+        summaryRun.isBold = true
+        summaryRun.setText("Summary")
+        summaryRun.addBreak()
+        summaryRun.isBold = false
+
+        val detailRun = summaryPara.createRun()
+        detailRun.setText(
+            "Class Average: ${avg.fmt()}   |   " +
+                    "Highest: ${highest.fmt()}   |   " +
+                    "Lowest: ${lowest.fmt()}   |   " +
+                    "Passing: $passing   |   " +
+                    "Failing: $failing"
+        )
+
+        // ── Save ──────────────────────────────────────────────────────────
+        outputFile.parentFile?.mkdirs()
+        outputFile.outputStream().use { doc.write(it) }
+        doc.close()
+    }
+
     // ── Save as HTML ──────────────────────────────────────────────────────────
 
     fun saveAsHtml(students: List<Student>, outputFile: File) {
         outputFile.parentFile?.mkdirs()
         outputFile.writeText(generateHtmlContent(students))
-        // Auto-open in browser
         java.awt.Desktop.getDesktop().browse(outputFile.toURI())
     }
 
     // ── Save as PDF (via browser print) ──────────────────────────────────────
 
     fun saveAsPdf(students: List<Student>, outputFile: File) {
-        // Generate a temp HTML file next to the pdf output location
         val tempHtml = File(outputFile.parent, outputFile.nameWithoutExtension + "_temp.html")
         tempHtml.parentFile?.mkdirs()
         tempHtml.writeText(generateHtmlContent(students, forPrint = true))
-        // Open in browser — user prints as PDF using Ctrl+P
         java.awt.Desktop.getDesktop().browse(tempHtml.toURI())
     }
 
@@ -163,7 +240,6 @@ object ExcelWriter {
         val highest = students.maxOf { it.total }
         val lowest  = students.minOf { it.total }
 
-        // Build table rows using lambda
         val rows = students.mapIndexed { index, s ->
             val color = when (s.grade) {
                 "A"  -> "#4CAF50"
@@ -273,7 +349,6 @@ object ExcelWriter {
                     font-size: 13px;
                     color: #9CDCFE;
                 }
-                .summary p { margin: 4px 0; }
                 .footer {
                     margin-top: 20px;
                     text-align: center;
