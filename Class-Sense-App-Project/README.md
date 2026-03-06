@@ -1,4 +1,4 @@
-# 📚 ClassSense
+# 📚 ClassSense APP
 
 ## Smart Attendance, Safety & Engagement System for Schools
 
@@ -168,6 +168,7 @@ Optional notifications for:
 - integration_test
 - mockito
 - test
+  
 
 ---
 
@@ -183,3 +184,7 @@ The application follows a structured testing approach:
 - Network failure handling tests
 
 Each major scenario is implemented as an independent test class.
+
+## 🧪 Authors
+# ATEH DAMARIS
+# WEPGNONG SHALOM
