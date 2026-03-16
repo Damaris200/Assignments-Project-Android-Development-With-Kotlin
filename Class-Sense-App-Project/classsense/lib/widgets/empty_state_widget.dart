@@ -47,6 +47,7 @@ class EmptyStateWidget extends StatelessWidget {
           Icon(
             icon,
             size: 80,
+            // ignore: deprecated_member_use
             color: const Color(0xFF2E86AB).withOpacity(0.4),
           ),
           const SizedBox(height: 24),

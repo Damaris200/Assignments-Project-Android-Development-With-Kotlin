@@ -38,6 +38,7 @@ class GeofenceSetup extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: size.width * 0.038,
+                  // ignore: deprecated_member_use
                   color: AppColors.darkNavy.withOpacity(0.6),
                 ),
               ),

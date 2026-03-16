@@ -48,6 +48,7 @@ class NotificationTile extends StatelessWidget {
                 Text(
                   subtitle,
                   style: TextStyle(
+                    // ignore: deprecated_member_use
                     color: AppColors.darkNavy.withOpacity(0.5),
                     fontSize: size.width * 0.032,
                   ),

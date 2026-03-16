@@ -20,6 +20,7 @@ Future<void> main() async {
 }
 
 class DefaultFirebaseOptions {
+  // ignore: prefer_typing_uninitialized_variables
   static var currentPlatform;
 }
 

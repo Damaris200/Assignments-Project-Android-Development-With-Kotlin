@@ -29,6 +29,7 @@ class _StudentHomeState extends State<StudentHome> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         backgroundColor: AppColors.white,
+        // ignore: deprecated_member_use
         indicatorColor: AppColors.skyBlue.withOpacity(0.15),
         destinations: const [
           NavigationDestination(
@@ -105,6 +106,7 @@ class _HomeTab extends StatelessWidget {
               'Today\'s Classes',
               style: TextStyle(
                 fontSize: size.width * 0.04,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -167,6 +169,7 @@ class _HomeTab extends StatelessWidget {
                                 '${cls['time']}  •  ${cls['room']}',
                                 style: TextStyle(
                                   fontSize: size.width * 0.033,
+                                  // ignore: deprecated_member_use
                                   color: AppColors.darkNavy.withOpacity(0.6),
                                 ),
                               ),
@@ -177,6 +180,7 @@ class _HomeTab extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
                             color: statusColor.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -288,6 +292,7 @@ class _AttendanceHistoryTab extends StatelessWidget {
                               Text(
                                 item['date']!,
                                 style: TextStyle(
+                                  // ignore: deprecated_member_use
                                   color: AppColors.darkNavy.withOpacity(0.5),
                                   fontSize: size.width * 0.032,
                                 ),
@@ -299,6 +304,7 @@ class _AttendanceHistoryTab extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
                             color: statusColor.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -329,6 +335,7 @@ class _AttendanceHistoryTab extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
+          // ignore: deprecated_member_use
           color: color.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
         ),
@@ -378,6 +385,7 @@ class _StudyTab extends StatelessWidget {
               'Revision quizzes for your classes',
               style: TextStyle(
                 fontSize: size.width * 0.04,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -399,6 +407,7 @@ class _StudyTab extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.all(size.width * 0.03),
                           decoration: BoxDecoration(
+                            // ignore: deprecated_member_use
                             color: AppColors.skyBlue.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -425,6 +434,7 @@ class _StudyTab extends StatelessWidget {
                                 '${quiz['topic']}  •  ${quiz['questions']} questions',
                                 style: TextStyle(
                                   fontSize: size.width * 0.032,
+                                  // ignore: deprecated_member_use
                                   color: AppColors.darkNavy.withOpacity(0.6),
                                 ),
                               ),
@@ -487,6 +497,7 @@ class _ProfileTab extends StatelessWidget {
               user?.email ?? '',
               style: TextStyle(
                 fontSize: size.width * 0.038,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -494,6 +505,7 @@ class _ProfileTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: AppColors.skyBlue.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
               ),

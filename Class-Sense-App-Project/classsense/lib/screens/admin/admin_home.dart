@@ -28,6 +28,7 @@ class _AdminHomeState extends State<AdminHome> {
         selectedIndex: _currentIndex,
         onDestinationSelected: (index) => setState(() => _currentIndex = index),
         backgroundColor: AppColors.white,
+        // ignore: deprecated_member_use
         indicatorColor: AppColors.skyBlue.withOpacity(0.15),
         destinations: const [
           NavigationDestination(
@@ -78,6 +79,7 @@ class _AdminDashboard extends StatelessWidget {
               'System overview',
               style: TextStyle(
                 fontSize: size.width * 0.04,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -114,6 +116,7 @@ class _AdminDashboard extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(size.width * 0.03),
             decoration: BoxDecoration(
+              // ignore: deprecated_member_use
               color: color.withOpacity(0.15),
               borderRadius: BorderRadius.circular(12),
             ),
@@ -209,6 +212,7 @@ class _ManageUsersTab extends StatelessWidget {
                               Text(
                                 u['email']!,
                                 style: TextStyle(
+                                  // ignore: deprecated_member_use
                                   color: AppColors.darkNavy.withOpacity(0.5),
                                   fontSize: size.width * 0.032,
                                 ),
@@ -221,7 +225,9 @@ class _ManageUsersTab extends StatelessWidget {
                               horizontal: 10, vertical: 4),
                           decoration: BoxDecoration(
                             color: u['role'] == 'Teacher'
+                                // ignore: deprecated_member_use
                                 ? AppColors.skyBlue.withOpacity(0.15)
+                                // ignore: deprecated_member_use
                                 : AppColors.successGreen.withOpacity(0.15),
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -287,6 +293,7 @@ class _AdminProfileTab extends StatelessWidget {
               user?.email ?? '',
               style: TextStyle(
                 fontSize: size.width * 0.038,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -294,6 +301,7 @@ class _AdminProfileTab extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: AppColors.alertRed.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
               ),
