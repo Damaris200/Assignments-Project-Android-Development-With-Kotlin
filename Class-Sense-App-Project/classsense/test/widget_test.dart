@@ -5,6 +5,7 @@ import 'package:classsense/screens/auth/login_screen.dart';
 import 'package:classsense/screens/auth/register_screen.dart';
 import 'package:classsense/screens/student/student_home.dart';
 import 'package:classsense/screens/admin/admin_home.dart';
+import 'package:classsense/screens/teacher/teacher_home.dart';
 
 import 'mock_firebase.dart';
 
@@ -187,5 +188,36 @@ void main() {
     await tester.tap(find.text('Settings'));
     await tester.pumpAndSettle();
     expect(find.text('Admin Settings'), findsOneWidget);
+  });
+
+  // Test 9: Teacher bottom nav switches tabs
+  testWidgets('Test 9: TeacherHome bottom nav switches tabs',
+      (WidgetTester tester) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const TeacherHome()));
+    await tester.pumpAndSettle();
+
+    // Dashboard tab default
+    expect(find.text('Teacher Dashboard'), findsOneWidget);
+
+    // Tap Attendance tab
+    await tester.tap(find.text('Attendance'));
+    await tester.pumpAndSettle();
+    expect(find.text('Class Attendance'), findsOneWidget);
+
+    // Tap Engagement tab
+    await tester.tap(find.text('Engagement'));
+    await tester.pumpAndSettle();
+    expect(find.text('Engagement Insights'), findsOneWidget);
+
+    // Tap Classwork tab
+    await tester.tap(find.text('Classwork'));
+    await tester.pumpAndSettle();
+    expect(find.text('Classwork & Reminders'), findsOneWidget);
+
+    // Tap Profile tab
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    expect(find.text('Logout'), findsOneWidget);
   });
 }

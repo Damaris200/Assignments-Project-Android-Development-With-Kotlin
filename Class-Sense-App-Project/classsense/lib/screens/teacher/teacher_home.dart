@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../../utils/app_colors.dart';
-import '../../utils/app_routes.dart';
+import 'teacher_dashboard.dart';
+import 'attendance_screen.dart';
+import 'engagement_screen.dart';
+import 'teacher_classwork.dart';
+import 'teacher_profile.dart';
 
-/// Placeholder Teacher Home screen.
-/// Teammate: replace the body with your own tabs / features.
-/// The login & registration already route teachers here.
 class TeacherHome extends StatefulWidget {
   const TeacherHome({super.key});
 
@@ -14,57 +14,61 @@ class TeacherHome extends StatefulWidget {
 }
 
 class _TeacherHomeState extends State<TeacherHome> {
+  int _currentIndex = 0;
+
+  void _setTab(int index) {
+    if (index == _currentIndex) {
+      return;
+    }
+    setState(() => _currentIndex = index);
+  }
+
+  List<Widget> get _tabs => [
+    TeacherDashboard(onNavigate: _setTab),
+    const TeacherAttendanceScreen(),
+    const TeacherEngagementScreen(),
+    const TeacherClassworkScreen(),
+    const TeacherProfileTab(),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        title: const Text('Teacher Dashboard'),
-        backgroundColor: AppColors.darkNavy,
-        foregroundColor: AppColors.white,
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await FirebaseAuth.instance.signOut();
-              if (context.mounted) {
-                Navigator.pushReplacementNamed(context, AppRoutes.login);
-              }
-            },
+      body: _tabs[_currentIndex],
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: _setTab,
+        backgroundColor: AppColors.white,
+        // ignore: deprecated_member_use
+        indicatorColor: AppColors.skyBlue.withOpacity(0.15),
+        destinations: const [
+          NavigationDestination(
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard, color: AppColors.darkNavy),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.check_circle_outline),
+            selectedIcon: Icon(Icons.check_circle, color: AppColors.darkNavy),
+            label: 'Attendance',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.insights_outlined),
+            selectedIcon: Icon(Icons.insights, color: AppColors.darkNavy),
+            label: 'Engagement',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.assignment_outlined),
+            selectedIcon: Icon(Icons.assignment, color: AppColors.darkNavy),
+            label: 'Classwork',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person, color: AppColors.darkNavy),
+            label: 'Profile',
           ),
         ],
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.construction,
-                  size: 80, color: AppColors.skyBlue),
-              const SizedBox(height: 24),
-              Text(
-                'Welcome, ${user?.displayName ?? 'Teacher'}!',
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.darkNavy,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'This screen is under construction.\n'
-                'Teammate: add your teacher features here.',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
