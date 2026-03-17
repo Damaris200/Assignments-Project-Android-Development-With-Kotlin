@@ -14,6 +14,8 @@ class _AdminSettingsState extends State<AdminSettings> {
   bool _pushAlerts = true;
   bool _emailSummaries = true;
   bool _smsAlerts = false;
+  bool _biometricLock = true;
+  bool _autoCloseAttendanceWindow = true;
 
   @override
   Widget build(BuildContext context) {
@@ -38,10 +40,7 @@ class _AdminSettingsState extends State<AdminSettings> {
               ),
             ),
             SizedBox(height: size.height * 0.02),
-            _AnimatedIn(
-              index: 1,
-              child: _buildProfileCard(size, user),
-            ),
+            _AnimatedIn(index: 1, child: _buildProfileCard(size, user)),
             SizedBox(height: size.height * 0.025),
             _AnimatedIn(
               index: 2,
@@ -72,27 +71,30 @@ class _AdminSettingsState extends State<AdminSettings> {
                     children: [
                       SwitchListTile(
                         value: _pushAlerts,
-                        onChanged: (value) => setState(() => _pushAlerts = value),
+                        onChanged:
+                            (value) => setState(() => _pushAlerts = value),
                         title: const Text('Push Alerts'),
-                        subtitle:
-                            const Text('Notify admins about attendance spikes.'),
+                        subtitle: const Text(
+                          'Notify admins about attendance spikes.',
+                        ),
                         activeColor: AppColors.skyBlue,
                       ),
                       SwitchListTile(
                         value: _emailSummaries,
-                        onChanged: (value) =>
-                            setState(() => _emailSummaries = value),
+                        onChanged:
+                            (value) => setState(() => _emailSummaries = value),
                         title: const Text('Email Summaries'),
-                        subtitle:
-                            const Text('Weekly engagement reports via email.'),
+                        subtitle: const Text(
+                          'Weekly engagement reports via email.',
+                        ),
                         activeColor: AppColors.skyBlue,
                       ),
                       SwitchListTile(
                         value: _smsAlerts,
-                        onChanged: (value) => setState(() => _smsAlerts = value),
+                        onChanged:
+                            (value) => setState(() => _smsAlerts = value),
                         title: const Text('Emergency SMS'),
-                        subtitle:
-                            const Text('SMS for geofence breach alerts.'),
+                        subtitle: const Text('SMS for geofence breach alerts.'),
                         activeColor: AppColors.skyBlue,
                       ),
                     ],
@@ -109,16 +111,46 @@ class _AdminSettingsState extends State<AdminSettings> {
                   _buildSectionTitle(size, 'Security & Access'),
                   _buildInfoCard(
                     size,
-                    children: const [
-                      ListTile(
-                        leading: Icon(Icons.lock_outline),
-                        title: Text('Reset Password'),
-                        subtitle: Text('Force password update for all users.'),
+                    children: [
+                      SwitchListTile(
+                        value: _biometricLock,
+                        onChanged:
+                            (value) => setState(() => _biometricLock = value),
+                        title: const Text('Biometric Lock'),
+                        subtitle: const Text(
+                          'Require biometrics before opening admin panel.',
+                        ),
+                        activeColor: AppColors.skyBlue,
                       ),
                       ListTile(
-                        leading: Icon(Icons.devices),
-                        title: Text('Device Management'),
-                        subtitle: Text('View active devices and sessions.'),
+                        leading: const Icon(Icons.lock_outline),
+                        title: const Text('Reset Password'),
+                        subtitle: const Text(
+                          'Force password update for all users.',
+                        ),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Password reset flow is frontend-ready.',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.devices),
+                        title: const Text('Device Management'),
+                        subtitle: const Text(
+                          'View active devices and sessions.',
+                        ),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Device session view opens soon.'),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -134,16 +166,48 @@ class _AdminSettingsState extends State<AdminSettings> {
                   _buildSectionTitle(size, 'Data & Privacy'),
                   _buildInfoCard(
                     size,
-                    children: const [
-                      ListTile(
-                        leading: Icon(Icons.shield_outlined),
-                        title: Text('Privacy Controls'),
-                        subtitle: Text('Manage data retention and consent.'),
+                    children: [
+                      SwitchListTile(
+                        value: _autoCloseAttendanceWindow,
+                        onChanged:
+                            (value) => setState(
+                              () => _autoCloseAttendanceWindow = value,
+                            ),
+                        title: const Text('Auto-close attendance window'),
+                        subtitle: const Text(
+                          'Close attendance 15 mins after class starts.',
+                        ),
+                        activeColor: AppColors.skyBlue,
                       ),
                       ListTile(
-                        leading: Icon(Icons.backup_outlined),
-                        title: Text('Export Reports'),
-                        subtitle: Text('Download attendance and engagement data.'),
+                        leading: const Icon(Icons.shield_outlined),
+                        title: const Text('Privacy Controls'),
+                        subtitle: const Text(
+                          'Manage data retention and consent.',
+                        ),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Privacy controls configured locally.',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      ListTile(
+                        leading: const Icon(Icons.backup_outlined),
+                        title: const Text('Export Reports'),
+                        subtitle: const Text(
+                          'Download attendance and engagement data.',
+                        ),
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Report export started.'),
+                            ),
+                          );
+                        },
                       ),
                     ],
                   ),
@@ -273,10 +337,7 @@ class _AnimatedIn extends StatelessWidget {
   final int index;
   final Widget child;
 
-  const _AnimatedIn({
-    required this.index,
-    required this.child,
-  });
+  const _AnimatedIn({required this.index, required this.child});
 
   @override
   Widget build(BuildContext context) {
@@ -302,10 +363,7 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const _InfoRow({
-    required this.label,
-    required this.value,
-  });
+  const _InfoRow({required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
@@ -324,9 +382,7 @@ class _InfoRow extends StatelessWidget {
           ),
           Text(
             value,
-            style: TextStyle(
-              color: AppColors.darkNavy.withOpacity(0.6),
-            ),
+            style: TextStyle(color: AppColors.darkNavy.withOpacity(0.6)),
           ),
         ],
       ),

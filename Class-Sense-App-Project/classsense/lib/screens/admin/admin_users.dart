@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
+import '../../widgets/empty_state_widget.dart';
 import '../../widgets/status_badge.dart';
 
 class AdminUsers extends StatefulWidget {
@@ -11,6 +12,8 @@ class AdminUsers extends StatefulWidget {
 
 class _AdminUsersState extends State<AdminUsers> {
   int _selectedFilter = 0;
+  String _query = '';
+  final TextEditingController _searchController = TextEditingController();
 
   final List<Map<String, String>> _users = [
     {
@@ -25,18 +28,59 @@ class _AdminUsersState extends State<AdminUsers> {
       'role': 'Student',
       'status': 'Active',
     },
-    
-    
+    {
+      'name': 'Samuel Okoye',
+      'email': 'samuel.okoye@classsense.com',
+      'role': 'Admin',
+      'status': 'Active',
+    },
+    {
+      'name': 'Ruth Daniel',
+      'email': 'ruth.daniel@student.com',
+      'role': 'Student',
+      'status': 'Inactive',
+    },
+    {
+      'name': 'Grace Eze',
+      'email': 'grace.eze@school.edu',
+      'role': 'Teacher',
+      'status': 'Active',
+    },
   ];
 
   List<Map<String, String>> get _filteredUsers {
-    if (_selectedFilter == 1) {
-      return _users.where((user) => user['role'] == 'Teacher').toList();
+    final roleFiltered = _users.where((user) {
+      if (_selectedFilter == 1) {
+        return user['role'] == 'Teacher';
+      }
+      if (_selectedFilter == 2) {
+        return user['role'] == 'Student';
+      }
+      if (_selectedFilter == 3) {
+        return user['role'] == 'Admin';
+      }
+      return true;
+    });
+
+    final normalizedQuery = _query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return roleFiltered.toList();
     }
-    if (_selectedFilter == 2) {
-      return _users.where((user) => user['role'] == 'Student').toList();
-    }
-    return _users;
+
+    return roleFiltered.where((user) {
+      final name = (user['name'] ?? '').toLowerCase();
+      final email = (user['email'] ?? '').toLowerCase();
+      final role = (user['role'] ?? '').toLowerCase();
+      return name.contains(normalizedQuery) ||
+          email.contains(normalizedQuery) ||
+          role.contains(normalizedQuery);
+    }).toList();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,9 +121,22 @@ class _AdminUsersState extends State<AdminUsers> {
               _AnimatedIn(
                 index: 1,
                 child: TextField(
+                  controller: _searchController,
+                  onChanged: (value) => setState(() => _query = value),
                   decoration: InputDecoration(
                     hintText: 'Search name or email',
                     prefixIcon: const Icon(Icons.search),
+                    suffixIcon:
+                        _query.isEmpty
+                            ? null
+                            : IconButton(
+                              tooltip: 'Clear search',
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _query = '');
+                              },
+                              icon: const Icon(Icons.close),
+                            ),
                     filled: true,
                     fillColor: AppColors.lightGrey,
                   ),
@@ -94,6 +151,7 @@ class _AdminUsersState extends State<AdminUsers> {
                     _buildChip(0, 'All'),
                     _buildChip(1, 'Teachers'),
                     _buildChip(2, 'Students'),
+                    _buildChip(3, 'Admins'),
                   ],
                 ),
               ),
@@ -103,77 +161,103 @@ class _AdminUsersState extends State<AdminUsers> {
                   duration: const Duration(milliseconds: 250),
                   switchInCurve: Curves.easeOut,
                   switchOutCurve: Curves.easeIn,
-                  child: ListView.separated(
-                    key: ValueKey(_selectedFilter),
-                    itemCount: _filteredUsers.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final user = _filteredUsers[index];
-                      return _AnimatedIn(
-                        index: index,
-                        child: Container(
-                          padding: EdgeInsets.all(size.width * 0.04),
-                          decoration: BoxDecoration(
-                            color: AppColors.lightGrey,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: AppColors.darkNavy,
-                                foregroundColor: AppColors.white,
-                                child: Text(user['name']![0]),
-                              ),
-                              SizedBox(width: size.width * 0.04),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      user['name']!,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.darkNavy,
-                                        fontSize: size.width * 0.04,
+                  child:
+                      _filteredUsers.isEmpty
+                          ? EmptyStateWidget(
+                            key: ValueKey(_selectedFilter.toString() + _query),
+                            icon: Icons.person_off_outlined,
+                            title: 'No users found',
+                            subtitle:
+                                'Try a different role filter or search keyword.',
+                            buttonLabel: 'Clear Filters',
+                            onButtonPressed: () {
+                              _searchController.clear();
+                              setState(() {
+                                _selectedFilter = 0;
+                                _query = '';
+                              });
+                            },
+                          )
+                          : ListView.separated(
+                            key: ValueKey(_selectedFilter.toString() + _query),
+                            itemCount: _filteredUsers.length,
+                            separatorBuilder:
+                                (_, __) => const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final user = _filteredUsers[index];
+                              return _AnimatedIn(
+                                index: index,
+                                child: Container(
+                                  padding: EdgeInsets.all(size.width * 0.04),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.lightGrey,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: AppColors.darkNavy,
+                                        foregroundColor: AppColors.white,
+                                        child: Text(user['name']![0]),
                                       ),
-                                    ),
-                                    Text(
-                                      user['email']!,
-                                      style: TextStyle(
-                                        // ignore: deprecated_member_use
-                                        color:
-                                            AppColors.darkNavy.withOpacity(0.5),
-                                        fontSize: size.width * 0.032,
-                                      ),
-                                    ),
-                                    SizedBox(height: size.height * 0.005),
-                                    Row(
-                                      children: [
-                                        _roleBadge(user['role']!),
-                                        const SizedBox(width: 8),
-                                        StatusBadge<String>(
-                                          status: user['status']!,
-                                          labelOf: (value) => value,
-                                          colorOf: (value) =>
-                                              value == 'Active'
-                                                  ? AppColors.successGreen
-                                                  : AppColors.alertRed,
+                                      SizedBox(width: size.width * 0.04),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              user['name']!,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                color: AppColors.darkNavy,
+                                                fontSize: size.width * 0.04,
+                                              ),
+                                            ),
+                                            Text(
+                                              user['email']!,
+                                              style: TextStyle(
+                                                // ignore: deprecated_member_use
+                                                color: AppColors.darkNavy
+                                                    .withOpacity(0.5),
+                                                fontSize: size.width * 0.032,
+                                              ),
+                                            ),
+                                            SizedBox(
+                                              height: size.height * 0.005,
+                                            ),
+                                            Row(
+                                              children: [
+                                                _roleBadge(user['role']!),
+                                                const SizedBox(width: 8),
+                                                StatusBadge<String>(
+                                                  status: user['status']!,
+                                                  labelOf: (value) => value,
+                                                  colorOf:
+                                                      (value) =>
+                                                          value == 'Active'
+                                                              ? AppColors
+                                                                  .successGreen
+                                                              : AppColors
+                                                                  .alertRed,
+                                                ),
+                                              ],
+                                            ),
+                                          ],
                                         ),
-                                      ],
-                                    ),
-                                  ],
+                                      ),
+                                      Icon(
+                                        Icons.more_vert,
+                                        color: AppColors.darkNavy.withOpacity(
+                                          0.6,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Icon(
-                                Icons.more_vert,
-                                color: AppColors.darkNavy.withOpacity(0.6),
-                              ),
-                            ],
+                              );
+                            },
                           ),
-                        ),
-                      );
-                    },
-                  ),
                 ),
               ),
             ],
@@ -198,7 +282,15 @@ class _AdminUsersState extends State<AdminUsers> {
   }
 
   Widget _roleBadge(String role) {
-    final color = role == 'Teacher' ? AppColors.skyBlue : AppColors.warningYellow;
+    final Color color;
+    if (role == 'Teacher') {
+      color = AppColors.skyBlue;
+    } else if (role == 'Student') {
+      color = AppColors.warningYellow;
+    } else {
+      color = AppColors.alertRed;
+    }
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
@@ -222,10 +314,7 @@ class _AnimatedIn extends StatelessWidget {
   final int index;
   final Widget child;
 
-  const _AnimatedIn({
-    required this.index,
-    required this.child,
-  });
+  const _AnimatedIn({required this.index, required this.child});
 
   @override
   Widget build(BuildContext context) {

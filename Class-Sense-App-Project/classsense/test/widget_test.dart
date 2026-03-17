@@ -19,6 +19,7 @@ Widget _testApp(Widget child) {
       '/student-home': (_) => const Scaffold(body: Text('StudentHome')),
       '/teacher-home': (_) => const Scaffold(body: Text('TeacherHome')),
       '/admin-home': (_) => const Scaffold(body: Text('AdminHome')),
+      '/admin-geofence': (_) => const Scaffold(body: Text('Geofence Setup')),
       '/onboarding': (_) => const Scaffold(body: Text('Onboarding')),
     },
   );
@@ -42,8 +43,9 @@ void main() {
   });
 
   // Test 1: Login screen renders correctly
-  testWidgets('Test 1: Login screen renders email, password, login button',
-      (WidgetTester tester) async {
+  testWidgets('Test 1: Login screen renders email, password, login button', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const LoginScreen()));
     await tester.pumpAndSettle();
@@ -62,8 +64,9 @@ void main() {
   });
 
   // Test 2: Login with empty fields shows validation error
-  testWidgets('Test 2: Login with empty fields shows validation errors',
-      (WidgetTester tester) async {
+  testWidgets('Test 2: Login with empty fields shows validation errors', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const LoginScreen()));
     await tester.pumpAndSettle();
@@ -78,8 +81,9 @@ void main() {
   });
 
   // Test 3: Register screen renders all fields
-  testWidgets('Test 3: Register screen renders all fields',
-      (WidgetTester tester) async {
+  testWidgets('Test 3: Register screen renders all fields', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const RegisterScreen()));
     await tester.pumpAndSettle();
@@ -88,28 +92,39 @@ void main() {
     expect(find.widgetWithText(TextFormField, 'Email'), findsOneWidget);
     expect(find.widgetWithText(TextFormField, 'Password'), findsOneWidget);
     expect(
-        find.widgetWithText(TextFormField, 'Confirm Password'), findsOneWidget);
+      find.widgetWithText(TextFormField, 'Confirm Password'),
+      findsOneWidget,
+    );
     expect(find.widgetWithText(ElevatedButton, 'Register'), findsOneWidget);
   });
 
   // Test 4: Password mismatch shows error
-  testWidgets('Test 4: Password mismatch shows error',
-      (WidgetTester tester) async {
+  testWidgets('Test 4: Password mismatch shows error', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const RegisterScreen()));
     await tester.pumpAndSettle();
 
     // Fill in name and email
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Full Name'), 'Test User');
+      find.widgetWithText(TextFormField, 'Full Name'),
+      'Test User',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Email'), 'test@mail.com');
+      find.widgetWithText(TextFormField, 'Email'),
+      'test@mail.com',
+    );
 
     // Enter mismatching passwords
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Password'), 'password123');
+      find.widgetWithText(TextFormField, 'Password'),
+      'password123',
+    );
     await tester.enterText(
-        find.widgetWithText(TextFormField, 'Confirm Password'), 'different');
+      find.widgetWithText(TextFormField, 'Confirm Password'),
+      'different',
+    );
 
     // Tap register
     await tester.tap(find.widgetWithText(ElevatedButton, 'Register'));
@@ -119,8 +134,9 @@ void main() {
   });
 
   // Test 5: Role dropdown has all options
-  testWidgets('Test 5: Role dropdown shows Student, Teacher, Admin',
-      (WidgetTester tester) async {
+  testWidgets('Test 5: Role dropdown shows Student, Teacher, Admin', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const RegisterScreen()));
     await tester.pumpAndSettle();
@@ -139,8 +155,9 @@ void main() {
   });
 
   // Test 7: Student bottom nav switches tabs
-  testWidgets('Test 7: StudentHome bottom nav switches tabs',
-      (WidgetTester tester) async {
+  testWidgets('Test 7: StudentHome bottom nav switches tabs', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const StudentHome()));
     await tester.pumpAndSettle();
@@ -165,8 +182,9 @@ void main() {
   });
 
   // Test 8: Admin bottom nav switches tabs
-  testWidgets('Test 8: AdminHome bottom nav switches tabs',
-      (WidgetTester tester) async {
+  testWidgets('Test 8: AdminHome bottom nav switches tabs', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const AdminHome()));
     await tester.pumpAndSettle();
@@ -191,8 +209,9 @@ void main() {
   });
 
   // Test 9: Teacher bottom nav switches tabs
-  testWidgets('Test 9: TeacherHome bottom nav switches tabs',
-      (WidgetTester tester) async {
+  testWidgets('Test 9: TeacherHome bottom nav switches tabs', (
+    WidgetTester tester,
+  ) async {
     _setPhoneSize(tester);
     await tester.pumpWidget(_testApp(const TeacherHome()));
     await tester.pumpAndSettle();
@@ -219,5 +238,86 @@ void main() {
     await tester.tap(find.text('Profile'));
     await tester.pumpAndSettle();
     expect(find.text('Logout'), findsOneWidget);
+  });
+
+  // Test 10: Admin users tab can search and clear search
+  testWidgets('Test 10: Admin users search and clear flow works', (
+    WidgetTester tester,
+  ) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const AdminHome()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Users'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Manage Users'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'Samuel');
+    await tester.pumpAndSettle();
+    expect(find.text('Samuel Okoye'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'NotAUser');
+    await tester.pumpAndSettle();
+    expect(find.text('No users found'), findsOneWidget);
+
+    await tester.tap(find.text('Clear Filters'));
+    await tester.pumpAndSettle();
+    expect(find.text('John Doe'), findsOneWidget);
+  });
+
+  // Test 11: Admin dashboard opens geofence setup route
+  testWidgets('Test 11: Admin dashboard navigates to geofence setup', (
+    WidgetTester tester,
+  ) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const AdminHome()));
+    await tester.pumpAndSettle();
+
+    await tester.scrollUntilVisible(
+      find.text('Geofence Setup').first,
+      250,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.tap(find.text('Geofence Setup').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Geofence Setup'), findsOneWidget);
+  });
+
+  // Test 12: Teacher attendance filters students by status
+  testWidgets('Test 12: Teacher attendance late filter works', (
+    WidgetTester tester,
+  ) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const TeacherHome()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Attendance'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.widgetWithText(ChoiceChip, 'Late'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Kola Yusuf'), findsOneWidget);
+    expect(find.text('Ada Obi'), findsNothing);
+  });
+
+  // Test 13: Teacher engagement supports intervention flow
+  testWidgets('Test 13: Teacher engagement open plan action appears', (
+    WidgetTester tester,
+  ) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const TeacherHome()));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Engagement').last);
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('At-Risk:'), findsOneWidget);
+    await tester.tap(find.text('Open Plan'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Intervention workflow opened.'), findsOneWidget);
   });
 }

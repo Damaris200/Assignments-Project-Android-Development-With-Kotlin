@@ -1,8 +1,30 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 
-class TeacherClassworkScreen extends StatelessWidget {
+class TeacherClassworkScreen extends StatefulWidget {
   const TeacherClassworkScreen({super.key});
+
+  @override
+  State<TeacherClassworkScreen> createState() => _TeacherClassworkScreenState();
+}
+
+class _TeacherClassworkScreenState extends State<TeacherClassworkScreen> {
+  int _selectedStream = 0;
+
+  final List<Map<String, String>> _assignments = const [
+    {
+      'title': 'Quadratic Equations Worksheet',
+      'class': 'SS2 Mathematics',
+      'due': 'Due tomorrow 8:00 AM',
+      'status': 'Open',
+    },
+    {
+      'title': 'Momentum Quiz (10 mins)',
+      'class': 'SS1 Physics',
+      'due': 'Scheduled today 11:30 AM',
+      'status': 'Scheduled',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +71,35 @@ class TeacherClassworkScreen extends StatelessWidget {
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
+            SizedBox(height: size.height * 0.015),
+            SizedBox(
+              height: 38,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: [
+                  _buildStreamChip(label: 'All Streams', index: 0),
+                  const SizedBox(width: 8),
+                  _buildStreamChip(label: 'SS2 Mathematics', index: 1),
+                  const SizedBox(width: 8),
+                  _buildStreamChip(label: 'SS1 Physics', index: 2),
+                ],
+              ),
+            ),
             SizedBox(height: size.height * 0.025),
+            _SectionCard(
+              title: 'Assignments Pipeline',
+              children: _assignments
+                  .map(
+                    (task) => _AssignmentTile(
+                      title: task['title']!,
+                      className: task['class']!,
+                      due: task['due']!,
+                      status: task['status']!,
+                    ),
+                  )
+                  .toList(),
+            ),
+            SizedBox(height: size.height * 0.02),
             _SectionCard(
               title: 'Today\'s Tasks',
               children: const [
@@ -83,22 +133,65 @@ class TeacherClassworkScreen extends StatelessWidget {
             SizedBox(height: size.height * 0.02),
             _SectionCard(
               title: 'Quick Actions',
-              children: const [
+              children: [
                 _ActionTile(
                   icon: Icons.notifications_active,
                   title: 'Send reminder to class',
                   subtitle: 'Notify students about homework',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Reminder sent to selected class stream.'),
+                      ),
+                    );
+                  },
                 ),
                 _ActionTile(
                   icon: Icons.menu_book,
                   title: 'Share study guide',
                   subtitle: 'Push notes for next lesson',
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Study guide shared successfully.'),
+                      ),
+                    );
+                  },
                 ),
               ],
+            ),
+            SizedBox(height: size.height * 0.02),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('New classwork draft created.'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add_task),
+                label: const Text('Create New Classwork'),
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildStreamChip({required String label, required int index}) {
+    final selected = _selectedStream == index;
+    return ChoiceChip(
+      label: Text(label),
+      selected: selected,
+      selectedColor: AppColors.skyBlue.withOpacity(0.15),
+      labelStyle: TextStyle(
+        color: selected ? AppColors.skyBlue : AppColors.darkNavy,
+        fontWeight: FontWeight.w600,
+      ),
+      onSelected: (_) => setState(() => _selectedStream = index),
     );
   }
 }
@@ -252,29 +345,101 @@ class _ActionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
+  final VoidCallback? onTap;
 
   const _ActionTile({
     required this.icon,
     required this.title,
     required this.subtitle,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Padding(
+          padding: const EdgeInsets.all(2),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  // ignore: deprecated_member_use
+                  color: AppColors.skyBlue.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: AppColors.skyBlue),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.darkNavy,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: AppColors.darkNavy.withOpacity(0.6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 14,
+                color: AppColors.darkNavy.withOpacity(0.5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AssignmentTile extends StatelessWidget {
+  final String title;
+  final String className;
+  final String due;
+  final String status;
+
+  const _AssignmentTile({
+    required this.title,
+    required this.className,
+    required this.due,
+    required this.status,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color color = status == 'Open'
+        ? AppColors.successGreen
+        : AppColors.warningYellow;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(10),
+            width: 4,
+            height: 48,
             decoration: BoxDecoration(
-              // ignore: deprecated_member_use
-              color: AppColors.skyBlue.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(10),
+              color: color,
+              borderRadius: BorderRadius.circular(4),
             ),
-            child: Icon(icon, color: AppColors.skyBlue),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -287,12 +452,27 @@ class _ActionTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  subtitle,
+                  '$className • $due',
                   style: TextStyle(
                     color: AppColors.darkNavy.withOpacity(0.6),
                   ),
                 ),
               ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              status,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w600,
+                fontSize: 12,
+              ),
             ),
           ),
         ],

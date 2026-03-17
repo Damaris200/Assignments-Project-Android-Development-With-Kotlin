@@ -50,6 +50,38 @@ class AdminDashboard extends StatelessWidget {
                       color: AppColors.darkNavy.withOpacity(0.6),
                     ),
                   ),
+                  SizedBox(height: size.height * 0.01),
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: size.width * 0.035,
+                      vertical: size.height * 0.01,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.lightBlueTint,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_month,
+                          color: AppColors.skyBlue,
+                        ),
+                        SizedBox(width: size.width * 0.02),
+                        Expanded(
+                          child: Text(
+                            'Monday, Mar 17 • Term 2 Week 6',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: size.width * 0.034,
+                              color: AppColors.darkNavy,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -210,8 +242,9 @@ class AdminDashboard extends StatelessWidget {
                                     style: TextStyle(
                                       fontSize: size.width * 0.032,
                                       // ignore: deprecated_member_use
-                                      color:
-                                          AppColors.darkNavy.withOpacity(0.6),
+                                      color: AppColors.darkNavy.withOpacity(
+                                        0.6,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -225,6 +258,49 @@ class AdminDashboard extends StatelessWidget {
                 ],
               ),
             ),
+            SizedBox(height: size.height * 0.02),
+            _AnimatedIn(
+              index: 4,
+              child: Container(
+                width: double.infinity,
+                padding: EdgeInsets.all(size.width * 0.045),
+                decoration: BoxDecoration(
+                  color: AppColors.darkNavy,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Safety Snapshot',
+                      style: TextStyle(
+                        fontSize: size.width * 0.042,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.white,
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.006),
+                    Text(
+                      'No active geofence breaches. 2 classes flagged for low engagement trend.',
+                      style: TextStyle(
+                        fontSize: size.width * 0.034,
+                        color: AppColors.white.withOpacity(0.88),
+                      ),
+                    ),
+                    SizedBox(height: size.height * 0.015),
+                    OutlinedButton.icon(
+                      onPressed: () => onNavigate(2),
+                      icon: const Icon(Icons.insights_outlined),
+                      label: const Text('View Detailed Reports'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppColors.white,
+                        side: const BorderSide(color: AppColors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -236,10 +312,7 @@ class _AnimatedIn extends StatelessWidget {
   final int index;
   final Widget child;
 
-  const _AnimatedIn({
-    required this.index,
-    required this.child,
-  });
+  const _AnimatedIn({required this.index, required this.child});
 
   @override
   Widget build(BuildContext context) {

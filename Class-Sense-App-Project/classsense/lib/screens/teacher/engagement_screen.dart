@@ -2,8 +2,21 @@ import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
 import '../../widgets/engagement_chart.dart';
 
-class TeacherEngagementScreen extends StatelessWidget {
+class TeacherEngagementScreen extends StatefulWidget {
   const TeacherEngagementScreen({super.key});
+
+  @override
+  State<TeacherEngagementScreen> createState() => _TeacherEngagementScreenState();
+}
+
+class _TeacherEngagementScreenState extends State<TeacherEngagementScreen> {
+  int _selectedClass = 0;
+
+  final List<Map<String, String>> _classes = const [
+    {'name': 'SS2 Mathematics', 'avg': '76%'},
+    {'name': 'SS1 Physics', 'avg': '71%'},
+    {'name': 'JSS3 Basic Science', 'avg': '82%'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +52,92 @@ class TeacherEngagementScreen extends StatelessWidget {
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
+            SizedBox(height: size.height * 0.016),
+            SizedBox(
+              height: 38,
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: _classes.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 8),
+                itemBuilder: (context, index) {
+                  final selected = _selectedClass == index;
+                  final item = _classes[index];
+                  return ChoiceChip(
+                    selected: selected,
+                    onSelected: (_) => setState(() => _selectedClass = index),
+                    selectedColor: AppColors.skyBlue.withOpacity(0.15),
+                    label: Text(item['name']!),
+                    labelStyle: TextStyle(
+                      color: selected ? AppColors.skyBlue : AppColors.darkNavy,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  );
+                },
+              ),
+            ),
             SizedBox(height: size.height * 0.025),
             EngagementChart(scores: const [72, 64, 83, 57, 91, 76, 69]),
+            SizedBox(height: size.height * 0.016),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(size.width * 0.04),
+              decoration: BoxDecoration(
+                color: AppColors.lightGrey,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.analytics_outlined, color: AppColors.skyBlue),
+                  SizedBox(width: size.width * 0.03),
+                  Expanded(
+                    child: Text(
+                      '${_classes[_selectedClass]['name']} average engagement: ${_classes[_selectedClass]['avg']}.',
+                      style: TextStyle(
+                        color: AppColors.darkNavy,
+                        fontSize: size.width * 0.034,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: size.height * 0.025),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(size.width * 0.04),
+              decoration: BoxDecoration(
+                color: AppColors.warningYellow.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.flag_outlined, color: AppColors.warningYellow),
+                  SizedBox(width: size.width * 0.03),
+                  Expanded(
+                    child: Text(
+                      'At-Risk: 2 students below 50% focus for 3 sessions.',
+                      style: TextStyle(
+                        color: AppColors.darkNavy,
+                        fontSize: size.width * 0.033,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Intervention workflow opened.'),
+                        ),
+                      );
+                    },
+                    child: const Text('Open Plan'),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: size.height * 0.02),
             Text(
               'Student Engagement',
               style: TextStyle(
@@ -130,6 +226,21 @@ class TeacherEngagementScreen extends StatelessWidget {
                   ),
                 );
               },
+            ),
+            SizedBox(height: size.height * 0.02),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Engagement summary shared to class feed.'),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.share_outlined),
+                label: const Text('Share Engagement Summary'),
+              ),
             ),
           ],
         ),

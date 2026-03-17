@@ -43,6 +43,41 @@ class TeacherDashboard extends StatelessWidget {
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
+            SizedBox(height: size.height * 0.012),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(size.width * 0.04),
+              decoration: BoxDecoration(
+                color: AppColors.lightBlueTint,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.successGreen.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(
+                      Icons.bluetooth_connected,
+                      color: AppColors.successGreen,
+                    ),
+                  ),
+                  SizedBox(width: size.width * 0.03),
+                  Expanded(
+                    child: Text(
+                      'BLE and geofence sync active. Attendance updates every 30 seconds.',
+                      style: TextStyle(
+                        color: AppColors.darkNavy,
+                        fontSize: size.width * 0.033,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             SizedBox(height: size.height * 0.025),
             StatCard(
               icon: Icons.group,
@@ -110,6 +145,46 @@ class TeacherDashboard extends StatelessWidget {
                   onTap: () => onNavigate(3),
                 ),
               ],
+            ),
+            SizedBox(height: size.height * 0.03),
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.all(size.width * 0.045),
+              decoration: BoxDecoration(
+                color: AppColors.darkNavy,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Safety & Focus Snapshot',
+                    style: TextStyle(
+                      color: AppColors.white,
+                      fontSize: size.width * 0.042,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.008),
+                  Text(
+                    '2 students repeatedly leaving seat zone. 1 class segment needs engagement boost.',
+                    style: TextStyle(
+                      color: AppColors.white.withOpacity(0.9),
+                      fontSize: size.width * 0.033,
+                    ),
+                  ),
+                  SizedBox(height: size.height * 0.014),
+                  OutlinedButton.icon(
+                    onPressed: () => onNavigate(2),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.white,
+                      side: const BorderSide(color: AppColors.white),
+                    ),
+                    icon: const Icon(Icons.insights_outlined),
+                    label: const Text('Review Engagement Detail'),
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: size.height * 0.03),
             Text(
