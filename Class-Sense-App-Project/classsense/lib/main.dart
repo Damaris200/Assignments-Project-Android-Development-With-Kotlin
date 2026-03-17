@@ -10,6 +10,7 @@ import 'screens/auth/register_screen.dart';
 import 'screens/student/student_home.dart';
 import 'screens/teacher/teacher_home.dart';
 import 'screens/admin/admin_home.dart';
+import 'screens/admin/geofence_setup.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,6 +43,7 @@ class ClassSenseApp extends StatelessWidget {
         AppRoutes.studentHome: (context) => const StudentHome(),
         AppRoutes.teacherHome: (context) => const TeacherHome(),
         AppRoutes.adminHome: (context) => const AdminHome(),
+        AppRoutes.adminGeofence: (context) => const GeofenceSetup(),
         '/error': (context) => const ErrorScreen(),
       },
     );
