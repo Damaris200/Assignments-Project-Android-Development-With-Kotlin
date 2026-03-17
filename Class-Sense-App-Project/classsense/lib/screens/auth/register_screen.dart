@@ -143,6 +143,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: size.width * 0.038,
+                      // ignore: deprecated_member_use
                       color: AppColors.darkNavy.withOpacity(0.6),
                     ),
                   ),
@@ -153,6 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
                         color: AppColors.alertRed.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -320,6 +322,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         backgroundColor: AppColors.darkNavy,
                         foregroundColor: AppColors.white,
                         disabledBackgroundColor:
+                            // ignore: deprecated_member_use
                             AppColors.darkNavy.withOpacity(0.6),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -354,6 +357,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           'Already have an account? ',
                           style: TextStyle(
+                            // ignore: deprecated_member_use
                             color: AppColors.darkNavy.withOpacity(0.6),
                             fontSize: size.width * 0.035,
                           ),

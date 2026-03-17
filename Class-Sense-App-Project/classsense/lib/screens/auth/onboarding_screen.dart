@@ -126,6 +126,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: size.width * 0.04,
+                            // ignore: deprecated_member_use
                             color: AppColors.darkNavy.withOpacity(0.7),
                             height: 1.5,
                           ),

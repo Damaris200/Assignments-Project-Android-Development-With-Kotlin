@@ -54,6 +54,7 @@ class ProfileView extends StatelessWidget {
               user?.email ?? '',
               style: TextStyle(
                 fontSize: size.width * 0.038,
+                // ignore: deprecated_member_use
                 color: AppColors.darkNavy.withOpacity(0.6),
               ),
             ),
@@ -61,6 +62,7 @@ class ProfileView extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
               decoration: BoxDecoration(
+                // ignore: deprecated_member_use
                 color: roleColor.withOpacity(0.15),
                 borderRadius: BorderRadius.circular(20),
               ),

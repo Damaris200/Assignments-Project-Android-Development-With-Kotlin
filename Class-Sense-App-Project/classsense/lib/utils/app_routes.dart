@@ -8,4 +8,5 @@ class AppRoutes {
   static const String studentHome = '/student-home';
   static const String teacherHome = '/teacher-home';
   static const String adminHome = '/admin-home';
+  static const String adminGeofence = '/admin-geofence';
 }

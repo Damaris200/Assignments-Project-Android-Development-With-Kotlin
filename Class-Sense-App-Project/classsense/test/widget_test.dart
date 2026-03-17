@@ -4,6 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:classsense/screens/auth/login_screen.dart';
 import 'package:classsense/screens/auth/register_screen.dart';
 import 'package:classsense/screens/student/student_home.dart';
+import 'package:classsense/screens/admin/admin_home.dart';
+import 'package:classsense/screens/teacher/teacher_home.dart';
 
 import 'mock_firebase.dart';
 
@@ -39,7 +41,7 @@ void main() {
     await initializeFirebaseForTest();
   });
 
-  // ─── Test 1: Login screen renders correctly ───────────────
+  // Test 1: Login screen renders correctly
   testWidgets('Test 1: Login screen renders email, password, login button',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -59,7 +61,7 @@ void main() {
     expect(find.text('Register'), findsOneWidget);
   });
 
-  // ─── Test 2: Login with empty fields shows validation error ───
+  // Test 2: Login with empty fields shows validation error
   testWidgets('Test 2: Login with empty fields shows validation errors',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -75,7 +77,7 @@ void main() {
     expect(find.text('Please enter your password'), findsOneWidget);
   });
 
-  // ─── Test 3: Register screen renders all fields ───────────
+  // Test 3: Register screen renders all fields
   testWidgets('Test 3: Register screen renders all fields',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -90,7 +92,7 @@ void main() {
     expect(find.widgetWithText(ElevatedButton, 'Register'), findsOneWidget);
   });
 
-  // ─── Test 4: Password mismatch shows error ────────────────
+  // Test 4: Password mismatch shows error
   testWidgets('Test 4: Password mismatch shows error',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -116,7 +118,7 @@ void main() {
     expect(find.text('Passwords do not match'), findsOneWidget);
   });
 
-  // ─── Test 5: Role dropdown has all options ─────────────────
+  // Test 5: Role dropdown has all options
   testWidgets('Test 5: Role dropdown shows Student, Teacher, Admin',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -136,7 +138,7 @@ void main() {
     expect(find.text('Admin'), findsOneWidget);
   });
 
-  // ─── Test 7: Student bottom nav switches tabs ──────────────
+  // Test 7: Student bottom nav switches tabs
   testWidgets('Test 7: StudentHome bottom nav switches tabs',
       (WidgetTester tester) async {
     _setPhoneSize(tester);
@@ -155,6 +157,63 @@ void main() {
     await tester.tap(find.text('Study'));
     await tester.pumpAndSettle();
     expect(find.text('Study Assistant'), findsOneWidget);
+
+    // Tap Profile tab
+    await tester.tap(find.text('Profile'));
+    await tester.pumpAndSettle();
+    expect(find.text('Logout'), findsOneWidget);
+  });
+
+  // Test 8: Admin bottom nav switches tabs
+  testWidgets('Test 8: AdminHome bottom nav switches tabs',
+      (WidgetTester tester) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const AdminHome()));
+    await tester.pumpAndSettle();
+
+    // Dashboard tab default
+    expect(find.text('Admin Dashboard'), findsOneWidget);
+
+    // Tap Users tab
+    await tester.tap(find.text('Users'));
+    await tester.pumpAndSettle();
+    expect(find.text('Manage Users'), findsOneWidget);
+
+    // Tap Reports tab
+    await tester.tap(find.text('Reports'));
+    await tester.pumpAndSettle();
+    expect(find.text('Reports & Insights'), findsOneWidget);
+
+    // Tap Settings tab
+    await tester.tap(find.text('Settings'));
+    await tester.pumpAndSettle();
+    expect(find.text('Admin Settings'), findsOneWidget);
+  });
+
+  // Test 9: Teacher bottom nav switches tabs
+  testWidgets('Test 9: TeacherHome bottom nav switches tabs',
+      (WidgetTester tester) async {
+    _setPhoneSize(tester);
+    await tester.pumpWidget(_testApp(const TeacherHome()));
+    await tester.pumpAndSettle();
+
+    // Dashboard tab default
+    expect(find.text('Teacher Dashboard'), findsOneWidget);
+
+    // Tap Attendance tab
+    await tester.tap(find.text('Attendance'));
+    await tester.pumpAndSettle();
+    expect(find.text('Class Attendance'), findsOneWidget);
+
+    // Tap Engagement tab
+    await tester.tap(find.text('Engagement'));
+    await tester.pumpAndSettle();
+    expect(find.text('Engagement Insights'), findsOneWidget);
+
+    // Tap Classwork tab
+    await tester.tap(find.text('Classwork'));
+    await tester.pumpAndSettle();
+    expect(find.text('Classwork & Reminders'), findsOneWidget);
 
     // Tap Profile tab
     await tester.tap(find.text('Profile'));

@@ -47,6 +47,7 @@ class StatusBadge<T> extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: color.withOpacity(0.15),
         borderRadius: BorderRadius.circular(20),
       ),
