@@ -109,7 +109,9 @@ class TeacherEngagementScreen extends StatelessWidget {
                       ),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           // ignore: deprecated_member_use
                           color: scoreColor.withOpacity(0.15),
