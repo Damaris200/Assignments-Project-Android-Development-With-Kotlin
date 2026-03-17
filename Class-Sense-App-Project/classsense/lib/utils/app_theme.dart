@@ -79,8 +79,8 @@ class AppTheme {
         ),
       ),
 
-      // Cards
-      cardTheme: CardTheme(
+      // Cards — fixed: CardThemeData instead of CardTheme
+      cardTheme: CardThemeData(
         elevation: 3,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
